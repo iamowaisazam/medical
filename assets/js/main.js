@@ -270,4 +270,48 @@
    */
   new PureCounter();
 
+
+
+
+
+
+
 })()
+
+async function get_categories(){
+        
+  let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6OZpZIQgKEAD0xSj4j93cO6E3pr3K9uq5jZ4a4nKULp-2pQ7Nq0o9AUFKwciUn5pap9GiruTbWkA/pub?output=csv";
+  
+ let res = await fetch(url)
+   .then(response => response.text())
+   .then(csvData => {
+
+     const lines = csvData.split('\n');
+     let headers = lines[0].split(',');
+     const jsonData = [];
+
+      headers = headers.map(str => str.replace(/\r/g, ''));
+
+
+  
+ 
+      for (let i = 1; i < lines.length; i++) {
+        const data = lines[i].split(',');
+
+        const entry = {};
+  
+        for (let j = 0; j < headers.length; j++) {
+          entry[headers[j]] = data[j];
+        }
+  
+        jsonData.push(entry);
+      }
+     
+     return jsonData;
+     
+   }).catch(error => { 
+        console.error('Error fetching CSV:', error) 
+   });
+ 
+   return res;
+}

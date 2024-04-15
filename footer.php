@@ -39,7 +39,7 @@
 
           <div class="col-lg-3 col-md-6 footer-links">
             <h4>Our Category</h4>
-            <ul>
+            <ul class="footer_category_drop" >
               <li><i class="bx bx-chevron-right"></i> <a href="#">All Surgical</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Dental Instrument</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Orthopedic Implants</a></li>
@@ -86,15 +86,53 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
-  
   <script>
-    
+   $(document).ready( async function(){
+
+        let categories = await get_categories();
+
+        if($("#Category .row")){
+          $("#Category .row").html('');
+          categories.forEach(element => {
+              if(element.parent == 0){
+                $("#Category .row").append(`
+                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+                <div class="icon-box aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+                  <div class="icon"><i class="fas fa-heartbeat"></i></div>
+                  <h4 class="title"><a href="category.php?id=${element.id}">${element.title}</a></h4>
+                  <p class="description">Minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat tarad limino ata</p>
+                </div>
+              </div>`); 
+              }
+          });
+        }
+
+
+        $('.category_menu_dropdown').html('');
+        categories.forEach(element => {
+            if(element.parent == 0){
+              $(".category_menu_dropdown").append(`<li>
+              <a href="category.php?id=${element.id}">${element.title}</a>
+              </li>`); 
+            }
+        });
+
+        $('.footer_category_drop').html('');
+        categories.forEach(element => {
+            if(element.parent == 0){
+              $(".footer_category_drop").append(`<li>
+                <i class="bx bx-chevron-right"></i>
+                <a href="category.php?id=${element.id}">${element.title}</a>
+               </li>`); 
+            }
+        });
+
+        
+        
     
   
-     
-      
-      
-     
+
+  });
   </script>
 
 </body>

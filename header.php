@@ -65,23 +65,13 @@
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
           <li><a class="nav-link scrollto " href="#hero">Home</a></li>
-          <li class="dropdown"><a href="category.php"><span>Category</span> <i class="bi bi-chevron-down"></i></a>
-            <ul>
-              <li><a href="#">All Surgical</a></li>
-              <!--<li class="dropdown"><a href="#"><span>Deep Drop Down</span> <i class="bi bi-chevron-right"></i></a>-->
-              <!--  <ul>-->
-              <!--    <li><a href="#">Deep Drop Down 1</a></li>-->
-              <!--    <li><a href="#">Deep Drop Down 2</a></li>-->
-              <!--    <li><a href="#">Deep Drop Down 3</a></li>-->
-              <!--    <li><a href="#">Deep Drop Down 4</a></li>-->
-              <!--    <li><a href="#">Deep Drop Down 5</a></li>-->
-              <!--  </ul>-->
-              <!--</li>-->
-              <li><a href="#">Dental Instrument</a></li>
-              <li><a href="#">Orthopedic Implants</a></li>
-              <li><a href="#">Laboratry Equipments</a></li>
-              <li><a href="#">Orthopedic Rehabilitation Product</a></li>
-              <li><a href="#">Hospital Hollowares</a></li>
+          <li class="dropdown">
+            <a href="#">
+              <span>Category</span> 
+              <i class="bi bi-chevron-down"></i>
+            </a>
+            <ul class="category_menu_dropdown" >
+        
             </ul>
           </li>
           <li><a class="nav-link scrollto" href="#about">About</a></li>
