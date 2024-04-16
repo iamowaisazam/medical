@@ -108,7 +108,7 @@
         }
 
 
-        $('.category_menu_dropdown').html('');
+$('.category_menu_dropdown').html('');
         categories.forEach(element => {
             if(element.parent == 0){
               $(".category_menu_dropdown").append(`<li>
@@ -133,6 +133,102 @@
   
 
   });
+  var urlIdGet = window.location.href;
+  var urlObj = new URL(urlIdGet);
+  var categoryId = urlObj.searchParams.get('id');
+  $(document).ready(async function() {
+    if ($("#categoryContainer").length) {
+        $("#categoryContainer").html('');
+
+        let SHEET_ID = '1PZZ74DsGbrJ1LWiNXr11sSS6aqsgngLQZudBTEMmRMk';
+        let SHEET_TITLE = 'product';
+        let SHEET_RANGE = 'A1:F10000';
+        let url = "https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?sheet=" + SHEET_TITLE + "&range=" + SHEET_RANGE;
+        
+
+        fetch(url)
+            .then(response => response.text())
+            .then(data => {
+                let dataJson = JSON.parse(data.substring(47).slice(0, -2)); 
+                let i = 0;
+                let j = 4;
+
+
+                dataJson.table.rows.forEach(row => {
+                    let categoryTitle = row.c[1].v;
+                    let categoryDescription = row.c[2].v;
+                    let categoryImage = row.c[4].v;
+                    let FetchcategoryId = row.c[5].v;
+                    if(FetchcategoryId == categoryId){
+                        if(i === 0 || i === j) {
+                            $("#categoryContainer").append(`<div class="row product-cat-row rowCategory">`);
+                        }
+
+                        $(".rowCategory:last-child").append(`
+                            <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0 product-cat">
+                                <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
+                                    <div class="icon">
+                                        <img class="category-image" src="${categoryImage}" alt="Image Description">
+                                    </div>
+                                    <h4 class="title"><a href="">${categoryTitle}</a></h4>
+                                    <p class="description">${categoryDescription}</p>
+                                </div>
+                            </div>
+                        `);
+
+                        if(i === j || i === dataJson.table.rows.length) {
+                            // Close the row after every 4 items or at the end of data
+                            $(".rowCategory:last-child").append(`</div>`);
+                            j += 4; // Increment the threshold for next row
+                        }
+                        i++;
+                    }else{
+                      // $("#categoryContainer").append(`<p> No any products.......</p>`);
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+    }
+});
+$(document).ready(async function() {
+
+
+  let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6OZpZIQgKEAD0xSj4j93cO6E3pr3K9uq5jZ4a4nKULp-2pQ7Nq0o9AUFKwciUn5pap9GiruTbWkA/pub?output=csv";
+
+  let res = await fetch(url)
+    .then(response => response.text())
+    .then(csvData => {
+  
+      let rows = csvData.split("\n");
+
+      let headers = rows[0].split(",");
+  
+      let data = {};
+
+      for (let i = 1; i < rows.length; i++) {
+
+        let columns = rows[i].split(",");
+       
+        let rowData = {};
+        for (let j = 0; j < headers.length; j++) {
+          rowData[headers[j]] = columns[j];
+        }
+  
+        data[rowData["id"]] = rowData;
+      }
+     
+      let matchedData = data[categoryId];
+      $("#category-heading-id").append(`<h2 class="category-heading">${matchedData['title']}</h2>`);;
+      console.log(matchedData); 
+    })
+    .catch((err) => {
+      console.log("CSV Error", err);
+    });
+});
+
+
+
+
   </script>
 
 </body>
