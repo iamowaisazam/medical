@@ -87,52 +87,53 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
   <script>
-   $(document).ready( async function(){
+      $(document).ready( async function(){
 
-        let categories = await get_categories();
-
-        if($("#Category .row")){
-          $("#Category .row").html('');
-          categories.forEach(element => {
-              if(element.parent == 0){
-                $("#Category .row").append(`
-                <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
-                <div class="icon-box aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
-                  <div class="icon"><i class="fas fa-heartbeat"></i></div>
-                  <h4 class="title"><a href="category.php?id=${element.id}">${element.title}</a></h4>
-                  <p class="description">Minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat tarad limino ata</p>
-                </div>
-              </div>`); 
-              }
-          });
-        }
+let categories = await get_categories();
+if($("#Category .row")){
+  $("#Category .row").html('');
+  categories.forEach(element => {
+    
+    console.log(element);
+    if(element.parent == 0){
+        $("#Category .row").append(`
+        <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0">
+        <div class="icon-box aos-init aos-animate" data-aos="fade-up" data-aos-delay="100">
+          <div class="icon"><i class="fas fa-heartbeat"></i></div>
+          <h4 class="title"><a href="category.php?id=${element.code}">${element.title}</a></h4>
+          <p class="description">Minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat tarad limino ata</p>
+        </div>
+      </div>`); 
+      }
+  });
+}
 
 
 $('.category_menu_dropdown').html('');
-        categories.forEach(element => {
-            if(element.parent == 0){
-              $(".category_menu_dropdown").append(`<li>
-              <a href="category.php?id=${element.id}">${element.title}</a>
-              </li>`); 
-            }
-        });
+categories.forEach(element => {
+    if(element.parent == 0){
+      $(".category_menu_dropdown").append(`<li>
+      <a href="category.php?id=${element.code}">${element.title}</a>
+      </li>`); 
+    }
+});
 
-        $('.footer_category_drop').html('');
-        categories.forEach(element => {
-            if(element.parent == 0){
-              $(".footer_category_drop").append(`<li>
-                <i class="bx bx-chevron-right"></i>
-                <a href="category.php?id=${element.id}">${element.title}</a>
-               </li>`); 
-            }
-        });
+$('.footer_category_drop').html('');
+categories.forEach(element => {
+    if(element.parent == 0){
+      $(".footer_category_drop").append(`<li>
+        <i class="bx bx-chevron-right"></i>
+        <a href="category.php?id=${element.code}">${element.title}</a>
+       </li>`); 
+    }
+});
 
-        
-        
-    
-  
 
-  });
+
+
+
+
+});
   var urlIdGet = window.location.href;
   var urlObj = new URL(urlIdGet);
   var categoryId = urlObj.searchParams.get('id');
@@ -157,13 +158,15 @@ $('.category_menu_dropdown').html('');
                 dataJson.table.rows.forEach(row => {
                     let categoryTitle = row.c[1].v;
                     let categoryDescription = row.c[2].v;
+                    let categoryEnable = row.c[3].v;
                     let categoryImage = row.c[4].v;
                     let FetchcategoryId = row.c[5].v;
+                    console.log(FetchcategoryId);
                     if(FetchcategoryId == categoryId){
                         if(i === 0 || i === j) {
                             $("#categoryContainer").append(`<div class="row product-cat-row rowCategory">`);
                         }
-
+                          if(categoryEnable ==1){
                         $(".rowCategory:last-child").append(`
                             <div class="col-md-6 col-lg-3 d-flex align-items-stretch mb-5 mb-lg-0 product-cat">
                                 <div class="icon-box" data-aos="fade-up" data-aos-delay="100">
@@ -175,7 +178,7 @@ $('.category_menu_dropdown').html('');
                                 </div>
                             </div>
                         `);
-
+                      }
                         if(i === j || i === dataJson.table.rows.length) {
                             // Close the row after every 4 items or at the end of data
                             $(".rowCategory:last-child").append(`</div>`);
@@ -190,15 +193,18 @@ $('.category_menu_dropdown').html('');
             .catch(error => console.error('Error:', error));
     }
 });
+if (categoryId) {
 $(document).ready(async function() {
 
-
-  let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6OZpZIQgKEAD0xSj4j93cO6E3pr3K9uq5jZ4a4nKULp-2pQ7Nq0o9AUFKwciUn5pap9GiruTbWkA/pub?output=csv";
+  let SHEET_ID = '1PZZ74DsGbrJ1LWiNXr11sSS6aqsgngLQZudBTEMmRMk';
+  let SHEET_TITLE = 'category';
+  let url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TITLE}`;
+  // let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6OZpZIQgKEAD0xSj4j93cO6E3pr3K9uq5jZ4a4nKULp-2pQ7Nq0o9AUFKwciUn5pap9GiruTbWkA/pub?output=csv";
 
   let res = await fetch(url)
     .then(response => response.text())
     .then(csvData => {
-  
+      csvData = csvData.replace(/"/g, "").replace(/\\/g, "");
       let rows = csvData.split("\n");
 
       let headers = rows[0].split(",");
@@ -219,13 +225,13 @@ $(document).ready(async function() {
      
       let matchedData = data[categoryId];
       $("#category-heading-id").append(`<h2 class="category-heading">${matchedData['title']}</h2>`);;
-      console.log(matchedData); 
+      // console.log(matchedData); 
     })
     .catch((err) => {
       console.log("CSV Error", err);
     });
 });
-
+}
 
 
 

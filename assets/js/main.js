@@ -278,40 +278,47 @@
 
 })()
 
-async function get_categories(){
-        
-  let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6OZpZIQgKEAD0xSj4j93cO6E3pr3K9uq5jZ4a4nKULp-2pQ7Nq0o9AUFKwciUn5pap9GiruTbWkA/pub?output=csv";
-  
- let res = await fetch(url)
-   .then(response => response.text())
-   .then(csvData => {
+async function get_categories() {
+  let SHEET_ID = '1PZZ74DsGbrJ1LWiNXr11sSS6aqsgngLQZudBTEMmRMk';
+  let SHEET_TITLE = 'category';
+  let url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_TITLE}`;
+  // let url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSo6OZpZIQgKEAD0xSj4j93cO6E3pr3K9uq5jZ4a4nKULp-2pQ7Nq0o9AUFKwciUn5pap9GiruTbWkA/pub?output=csv";
+  try {
+    let response = await fetch(url);
+    let csvData = await response.text();
 
-     const lines = csvData.split('\n');
-     let headers = lines[0].split(',');
-     const jsonData = [];
+    // Remove double quotes and escape characters
+    csvData = csvData.replace(/"/g, "").replace(/\\/g, "");
 
-      headers = headers.map(str => str.replace(/\r/g, ''));
+    const lines = csvData.split('\n');
+    let headers = lines[0].split(',');
+    headers = headers.map(str => str.trim()); 
+    const jsonData = [];
 
+    for (let i = 1; i < lines.length; i++) {
+      const data = lines[i].split(',');
+      const entry = {};
 
-  
- 
-      for (let i = 1; i < lines.length; i++) {
-        const data = lines[i].split(',');
-
-        const entry = {};
-  
+      if (data.length === headers.length) { 
         for (let j = 0; j < headers.length; j++) {
           entry[headers[j]] = data[j];
         }
-  
         jsonData.push(entry);
+      } else {
+        console.error(`Data length does not match headers length at line ${i + 1}`);
+        console.log('Headers:', headers);
+        console.log('Data:', data);
       }
-     
-     return jsonData;
-     
-   }).catch(error => { 
-        console.error('Error fetching CSV:', error) 
-   });
- 
-   return res;
+    }
+
+    return jsonData; // Return the parsed JSON data
+  } catch (error) {
+    console.error('Error fetching CSV:', error);
+    return null;
+  }
 }
+
+
+
+
+
